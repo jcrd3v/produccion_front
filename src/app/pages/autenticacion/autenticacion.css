@@ -1,0 +1,10 @@
+.auth-card {
+  border-radius: 1rem;
+  max-width: 400px;
+  width: 100%;
+  background-color: #fff;
+}
+
+.form-control:focus {
+  border-color: #0d6efd;
+}

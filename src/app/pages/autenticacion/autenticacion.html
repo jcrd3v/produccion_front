@@ -1,15 +1,21 @@
-<div class="d-flex justify-content-center mt-5">
-    <form [formGroup] = "formAutenticacion" (ngSubmit) = "iniciarSesion()">
-        <div class="form-floating mb-3">
-            <input type="text" class="form-control" id="floatingInput" placeholder="" formControlName = "nombreUsuario">
-            <label for="floatingInput">Nombre de Usuario</label>
-        </div>  
-        <div class="form-floating mb-3">
-            <input type="password" class="form-control" id="floatingPassword" placeholder="" formControlName = "claveUsuario">
-            <label for="floatingPassword">Clave de Usuario</label>
-        </div>
-        <div class="d-flex justify-content-center">
-            <button type="submit" class="btn btn-primary">Login</button>
-        </div>
+<div class="d-flex justify-content-center align-items-center vh-100 bg-light">
+  <div class="card shadow p-4 auth-card">
+    <form [formGroup]="formAutenticacion" (ngSubmit)="iniciarSesion()">
+      <h4 class="text-center mb-4">Iniciar Sesión</h4>
+      
+      <div class="form-floating mb-3">
+        <input type="text" class="form-control" id="floatingInput" placeholder="" formControlName="nombreUsuario">
+        <label for="floatingInput">Nombre de Usuario</label>
+      </div>  
+
+      <div class="form-floating mb-3">
+        <input type="password" class="form-control" id="floatingPassword" placeholder="" formControlName="claveUsuario">
+        <label for="floatingPassword">Clave de Usuario</label>
+      </div>
+
+      <div class="d-flex justify-content-center">
+        <button type="submit" class="btn btn-primary w-100">Login</button>
+      </div>
     </form>
+  </div>
 </div>
