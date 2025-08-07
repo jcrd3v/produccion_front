@@ -3,7 +3,7 @@ import { Autenticacion } from './pages/autenticacion/autenticacion';
 import { Almacen } from './pages/almacen/almacen';
 
 export const routes: Routes = [
-    {path:'', redirectTo:'autenticacion', pathMatch:'full'},
+    {path:'', redirectTo:'almacen', pathMatch:'full'},
     {path: 'autenticacion', component: Autenticacion},
     {path: 'almacen', component: Almacen}
 ];
