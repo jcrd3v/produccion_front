@@ -1,4 +1,14 @@
-<div class="d-flex justify-content-center align-items-center vh-100 bg-light">
+<nav class="navbar navbar-expand-lg bg-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand text-white" routerLink="/">
+      <img src="assets/angular.png" alt="Logo" width="30" height="24" class="d-inline-block align-text-top">
+      Angular
+    </a>
+    </div>
+</nav>
+
+
+<div class="d-flex justify-content-center align-items-center vh-100 bg-dark">
   <div class="card shadow p-4 auth-card">
     <form [formGroup]="formAutenticacion" (ngSubmit)="iniciarSesion()">
       <h4 class="text-center mb-4">Iniciar Sesión</h4>
@@ -14,7 +24,10 @@
       </div>
 
       <div class="d-flex justify-content-center">
-        <button type="submit" class="btn btn-primary w-100">Login</button>
+        <button 
+        type="submit" 
+        class="btn btn-dark w-100"
+        >Login</button>
       </div>
     </form>
   </div>

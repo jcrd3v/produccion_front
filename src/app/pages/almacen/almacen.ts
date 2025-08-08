@@ -1,15 +1,14 @@
-// =====================================
-// ARCHIVO: almacen.ts - CÓDIGO CORREGIDO
-// =====================================
-
 import { Component } from '@angular/core';
 import { AlmacenService } from '../../services/almacen-service';
+import { GerenciaService } from '../../services/gerencia-service';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
+import { Navbar } from '../../shared/navbar/navbar';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-almacen',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, Navbar],
   templateUrl: './almacen.html',
   styleUrl: './almacen.css'
 })
@@ -18,16 +17,19 @@ export class Almacen {
   materiales: any;
   materialSeleccionado: any;
   materialesSeleccionados: { 
+    id: number,
     nombre: string, 
     stock: number, 
     cantidad: number,
     unidadMedida: string
   }[] = [];
 
+  pedidosPendientes: any[] = [];
   cantidadesForm: FormGroup;
 
   constructor(
     private readonly almacenService: AlmacenService,
+    private readonly gerenciaService: GerenciaService,
     private fb: FormBuilder
   ) {
     this.cantidadesForm = this.fb.group({});
@@ -35,92 +37,126 @@ export class Almacen {
 
   ngOnInit() {
     this.listarTodosMateriales();
+    this.listarPedidosPendientes();
   }
 
-  listarMaterialesSeleccionados() {
-    this.confirmarSeleccion()
+  listarPedidosPendientes() {
+    this.gerenciaService.obtenerPedidos().subscribe({
+      next: (response: any) => {
+        this.pedidosPendientes = response.filter((pedido: any) => pedido.estadoPedido === 'PENDIENTE');
+      },
+      error: (error: any) => console.error('Error al obtener pedidos:', error)
+    });
+  }
+
+  private actualizarEstadoPedido(pedido: any, estado: string, mensaje: string) {
+    this.gerenciaService.actualizarEstadoPedido(pedido.idPedido, estado).subscribe({
+      next: () => {
+        this.listarPedidosPendientes();
+        Swal.fire({
+        title: "Estado del pedido enviado",
+        icon: "success"
+      });  
+      },
+      error: (error: any) => {
+        Swal.fire({
+        title: "No se pudo",
+        icon: "success"
+      }); 
+      }
+    });
+  }
+
+  aceptarPedido(pedido: any) {
+    this.actualizarEstadoPedido(pedido, 'ACEPTADO', 'Pedido aceptado correctamente');
+  }
+
+  rechazarPedido(pedido: any) {
+    this.actualizarEstadoPedido(pedido, 'RECHAZADO', 'Pedido rechazado correctamente');
   }
 
   listarTodosMateriales() {
     this.almacenService.obtenerMateriales().subscribe({
       next: (response: any) => {
-        console.log(response);
         this.materiales = response;
         this.crearControles();
       },
-      error: (error: any) => {
-        console.log(error);
-      }
+      error: (error: any) => console.log(error)
     })
   }
 
-  // 🔧 MÉTODO CORREGIDO
   crearControles() {
     const controles: any = {};
     this.materiales.forEach((material: any, index: number) => {
-      // Usar el índice como clave en lugar del idMaterial
       controles[`material_${index}`] = this.fb.control(0);
     });
     this.cantidadesForm = this.fb.group(controles);
-    
-    console.log('Controles creados:', controles);
   }
 
   abrirModal(material: any) {
     this.materialSeleccionado = material;
-    console.log('Material seleccionado:', material);
-    
-    // 🔧 AGREGAR: Encontrar el índice del material
-    const index = this.materiales.findIndex((m: any) => m === material);
-    console.log('Índice del material:', index);
-    
-    // 🔧 AGREGAR: Verificar el valor actual
-    const cantidadActual = this.cantidadesForm.get(`material_${index}`)?.value;
-    console.log('Cantidad actual en formulario:', cantidadActual);
   }
 
-  // 🔧 MÉTODO CORREGIDO
   confirmarSeleccion() {
-    // Encontrar el índice del material seleccionado
     const index = this.materiales.findIndex((m: any) => m === this.materialSeleccionado);
+    if (index === -1) return;
     
-    if (index === -1) {
-      console.error('No se encontró el material seleccionado');
-      return;
-    }
-    
-    // Obtener cantidad usando el índice
     const cantidad = this.cantidadesForm.get(`material_${index}`)?.value || 0;
     
-    console.log('Índice:', index);
-    console.log('Cantidad:', cantidad);
-    console.log('Material:', this.materialSeleccionado);
-    
     if (cantidad > 0) {
-      // Verificar si ya existe
       const existeIndex = this.materialesSeleccionados.findIndex(
         item => item.nombre === this.materialSeleccionado.nombreMaterial
       );
 
       if (existeIndex !== -1) {
-        // Actualizar cantidad existente
         this.materialesSeleccionados[existeIndex].cantidad = cantidad;
-        console.log('Material actualizado');
       } else {
-        // Agregar nuevo
         this.materialesSeleccionados.push({
+          id: this.materialSeleccionado.idMaterial,
           nombre: this.materialSeleccionado.nombreMaterial,
           stock: this.materialSeleccionado.stockMaterial,
           cantidad: cantidad,
           unidadMedida: this.materialSeleccionado.unidadMedidaMaterial
         });
-        console.log('Material agregado');
       }
-      
-      console.log('Lista actualizada:', this.materialesSeleccionados);
-    } else {
-      console.log('Cantidad es 0 o inválida');
     }
+  }
+
+  enviarTodoAProduccion() {
+    if (this.materialesSeleccionados.length === 0) {
+        Swal.fire({
+        title: "No hay materiales seleccionados",
+        icon: "warning"
+      }); 
+      return;
+    }
+
+    const materialesParaActualizar = [...this.materialesSeleccionados];
+    this.materialesSeleccionados = [];
+    
+      Swal.fire({
+        title: "Materiales enviados a producción exitosamente",
+        icon: "success"
+      }); 
+
+    // Actualizar stocks
+    let materialesProcesados = 0;
+    const totalMateriales = materialesParaActualizar.length;
+
+    materialesParaActualizar.forEach(material => {
+      this.almacenService.actualizarStockMaterial(material.id, material.cantidad).subscribe({
+        next: () => {
+          if (++materialesProcesados === totalMateriales) {
+            this.listarTodosMateriales();
+          }
+        },
+        error: () => {
+          if (++materialesProcesados === totalMateriales) {
+            this.listarTodosMateriales();
+          }
+        }
+      });
+    });
   }
 
   validarCantidad(event: Event, max: number): number {
@@ -133,9 +169,7 @@ export class Almacen {
     return 0;
   }
 
-  // 🔧 NUEVO: Método para quitar material de la lista
   quitarDeLista(index: number) {
     this.materialesSeleccionados.splice(index, 1);
-    console.log('Material eliminado, lista actualizada:', this.materialesSeleccionados);
   }
 }

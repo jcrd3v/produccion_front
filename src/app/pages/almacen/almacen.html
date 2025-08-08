@@ -1,16 +1,49 @@
+<app-navbar></app-navbar>
 <div class="container mt-4">
+  
+  <!-- Pedidos Pendientes -->
+  <div class="row mb-4" *ngIf="pedidosPendientes.length > 0">
+    <div class="col-12">
+      <div class="card shadow">
+        <div class="card-header bg-success text-light">
+          <h5 class="mb-0">Pedidos Pendientes de Aprobación</h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-4" *ngFor="let pedido of pedidosPendientes">
+              <div class="card border-dark mb-3">
+                <div class="card-body">
+                  <h6 class="card-title">{{ pedido.nombrePedido }}</h6>
+                  <p class="card-text">{{ pedido.descripcionPedido }}</p>
+                  <div class="d-flex gap-2">
+                    <button class="btn btn-success btn-sm" (click)="aceptarPedido(pedido)">
+                      Aceptar
+                    </button>
+                    <button class="btn btn-danger btn-sm" (click)="rechazarPedido(pedido)">
+                      Rechazar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="row">
 
-    <!-- Columna izquierda: Materiales en Almacén -->
-    <div class="col-md-6">
+    <!-- izq -->
+    <div class="col-md-8">
       <div class="card shadow w-100">
-        <div class="card-header bg-primary text-white">
+        <div class="card-header bg-dark text-white">
           <h5 class="mb-0">Materiales en Almacén</h5>
         </div>
 
         <div class="card-body">
           <div class="row row-cols-1 row-cols-md-2 g-3">
-            <!-- 🔧 CAMBIO: Agregado 'let i = index' -->
+
             <div class="col" *ngFor="let material of materiales; let i = index">
               <div class="card border-secondary h-100">
                 <div class="card-body fs-6">
@@ -20,7 +53,6 @@
                   <p class="card-text">
                     <strong>Unidad:</strong> {{ material.unidadMedidaMaterial }}<br />
                     <strong>Stock:</strong> {{ material.stockMaterial }}<br />
-                    <strong>Ubicación:</strong> {{ material.ubicacionMaterial }}
                   </p>
                     <form [formGroup]="cantidadesForm">
                       <div>
@@ -36,7 +68,7 @@
                         />
                         <button 
                           type="button"
-                          class="btn btn-outline-success btn-sm" 
+                          class="btn btn-outline-dark btn-sm" 
                           data-bs-toggle="modal" 
                           data-bs-target="#modalSeleccion"
                           (click)="abrirModal(material)">
@@ -52,34 +84,34 @@
       </div>
     </div>
 
-    <!-- Columna derecha: Materiales seleccionados para producción -->
-    <div class="col-md-6">
+    <!-- der -->
+    <div class="col-md-4">
       <div class="card shadow w-100">
-        <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
           <h5 class="mb-0">Seleccionados para Producción</h5>
-          <button class="btn btn-light btn-sm">
+          <button class="btn btn-light btn-sm" (click)="enviarTodoAProduccion()">
             Enviar todo
           </button>
         </div>
         <div class="card-body">
-        <table class="table table-bordered table-sm">
-          <thead class="table-success">
-            <tr>
-              <th>Material Seleccionado</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let seleccionado of materialesSeleccionados; let i = index">
-              <td>{{ seleccionado.nombre }} {{ seleccionado.cantidad }} {{ seleccionado.unidadMedida }}</td>
-              <td>
-                <button class="btn btn-danger btn-sm" (click)="quitarDeLista(i)">
-                  Quitar
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+          <table class="table table-bordered table-sm">
+            <thead class="table">
+              <tr>
+                <th>Material Seleccionado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let seleccionado of materialesSeleccionados; let i = index">
+                <td>{{ seleccionado.nombre }} {{ seleccionado.cantidad }} {{ seleccionado.unidadMedida }}</td>
+                <td>
+                  <button class="btn btn-danger btn-sm" (click)="quitarDeLista(i)">
+                    Quitar
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -87,7 +119,7 @@
   </div>
 </div>
 
-<!-- Modal de Confirmación -->
+<!-- modal -->
 <div class="modal fade" id="modalSeleccion" tabindex="-1" aria-labelledby="modalSeleccionLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -102,7 +134,7 @@
       </div>
 
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Cancelar</button>
         <button type="button" class="btn btn-success" data-bs-dismiss="modal" (click)="confirmarSeleccion()">Confirmar</button>
       </div>
 

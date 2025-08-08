@@ -29,7 +29,7 @@ export class Autenticacion {
       next: (response:any) => {
         console.log(response.mensaje);
         this.formAutenticacion.reset(); // limpiar formulario de autenticación
-        this.router.navigate(['/almacen']) // redirigir hacia almacén
+        this.router.navigate(['/gerencia']) // redirigir hacia almacén
       },
       error: (e:any) => {
         console.log(e.error.mensaje);

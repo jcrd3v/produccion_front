@@ -18,5 +18,9 @@ export class AlmacenService {
   añadirMaterial(body: any): Observable<any> {
     return this.http.post(this.apiMateriales, body);
   }
+
+  actualizarStockMaterial(idMaterial: number, cantidad: number): Observable<any> {
+    return this.http.patch(`${this.apiMateriales}/${idMaterial}/stock`, { cantidad: cantidad });
+  }
   
 }

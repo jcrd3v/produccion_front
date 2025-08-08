@@ -1,0 +1,32 @@
+<nav class="navbar navbar-expand-lg bg-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand text-white">
+      <img src="assets/angular.png" alt="Logo" width="30" height="24" class="d-inline-block align-text-top">
+      Control de Producción
+    </a>
+    
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+              <a class="nav-link text-white" routerLink="/gerencia" routerLinkActive="active">
+                  <i class="fas fa-cogs me-2"></i>Gerencia
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white" routerLink="/almacen" routerLinkActive="active">
+                    <i class="fas fa-warehouse me-2"></i>Almacén
+                </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-white" routerLink="/autenticacion" routerLinkActive="active">
+                <i class="fas fa-user-shield me-2"></i>Cerrar sesión
+              </a>
+            </li>
+      </ul>
+    </div>
+  </div>
+</nav>
